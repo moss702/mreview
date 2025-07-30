@@ -17,6 +17,6 @@ spring:
   servlet:
     multipart:
 #      enabled: true //기본값이라 안써줘도 됨
-      location: d:\\upload
+      location: d:/upload
       max-request-size: 30MB
       max-file-size: 10MB

@@ -54,6 +54,9 @@ dependencies {
   implementation 'org.mapstruct:mapstruct:1.6.3'
   annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
   annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+  implementation 'net.coobird:thumbnailator:0.4.14'
+
 }
 
 configurations {
