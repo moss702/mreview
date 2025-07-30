@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document</title>
+</head>
+<body>
+  <input type="file" name="files" multiple>
+  <button id="btnUpload" class="btn-upload">Upload</button>
+
+<script>
+  const btnUpload = document.querySelector('#btnUpload');
+  btnUpload.addEventListener('click', (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+
+    const files = document.querySelector("[type=file]").files;
+    for(const file of files){
+      console.log(file)
+      formData.append("files", file);
+    }
+  })
+</script>
+
+
+</body>
+</html>
