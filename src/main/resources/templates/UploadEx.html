@@ -4,14 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.11.0/axios.min.js" integrity="sha512-h9644v03pHqrIHThkvXhB2PJ8zf5E9IyVnrSfZg8Yj8k4RsO4zldcQc4Bi9iVLUCCsqNY0b4WXVV4UB+wbWENA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
   <input type="file" name="files" multiple>
   <button id="btnUpload" class="btn-upload">Upload</button>
 
+  <ul class="upload-list">
+
+
+  </ul>
+
   <script>
     const btnUpload = document.querySelector("#btnUpload");
+
+    window.addEventListener("load", (e) => {
+      document.querySelector('.upload-list').addEventListener('click', (e) =>{
+        if (e.target.matches('button, button i')) {
+          e.target.closest('li').remove();
+        }
+      })
+    });
+
     btnUpload.addEventListener('click', e => {
       e.preventDefault();
       const formData = new FormData();
@@ -22,13 +38,34 @@
       }
       console.log(axios);
       (async () => {
-        const resp = await axios.post('/uploadAjax', formData, {
-          headers: {
-            'content-type': 'multipart/form-data'
+        try {
+          const resp = await axios.post('/uploadAjax', formData, {
+            headers: {
+              'content-type': 'multipart/form-data'
+            }
+          });
+          console.log("업로드 완료");
+          console.log(resp.data);
+          document.querySelector(".upload-list").innerHTML += resp.data.map(ele => {
+            return `<li><img src="/display${ele.thumb}" alt="${ele.origin}"><button class="fa-solid fa-x btn"></button></li>`; // 배열상태
+          }).join("");
+
+        } catch (error) {
+          console.log(error);
+          const status = error.response.status;
+
+          if(error.response){
+            if(status === 400) {
+              alert(error.response.data);
+            }
+            else if (status === 500){
+              alert("서버 오류 발생")
+            }
           }
-        });
-        console.log("업로드 완료");
-        console.log(resp);
+          else {
+            alert("알 수 없는 오류 ");
+          }
+        }
       })();
     })
   </script>
