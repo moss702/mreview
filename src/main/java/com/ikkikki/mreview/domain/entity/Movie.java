@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -17,5 +19,7 @@ public class Movie extends BaseEntity{
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long mno;
   private String title;
+
+//  private List<MovieImage> images; //교재에는 없지만, 이렇게 하면 더 편리할지도
 
 }
