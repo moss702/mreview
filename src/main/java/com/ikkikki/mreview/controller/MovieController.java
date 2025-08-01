@@ -2,6 +2,7 @@ package com.ikkikki.mreview.controller;
 
 import com.ikkikki.mreview.domain.dto.MovieDTO;
 import com.ikkikki.mreview.domain.dto.PageRequestDTO;
+import com.ikkikki.mreview.domain.dto.PageResponseDTO;
 import com.ikkikki.mreview.service.MovieService;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +32,16 @@ public class MovieController {
 
   @GetMapping("list")
   public void list(@ModelAttribute("requestDto") PageRequestDTO dto, Model model){
+//    PageResponseDTO<?,?> Pagedto = movieService.getList(dto);
+//    log.info(Pagedto);
     model.addAttribute("movies", movieService.getList(dto));
+  }
+
+  @GetMapping("read")
+  public void read(@ModelAttribute("requestDto") PageRequestDTO dto, Model model, Long mno){
+    log.info(mno);
+    model.addAttribute("dto", movieService.get(mno));
+
   }
   
 }

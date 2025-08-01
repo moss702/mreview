@@ -18,6 +18,8 @@ public sealed interface MovieService permits MovieServiceImpl{
 
   PageResponseDTO<MovieDTO, Object[]> getList(PageRequestDTO dto);
 
+  MovieDTO get(Long mno);
+
   default Map<String, Object> toEntity(MovieDTO dto) {
     Map<String, Object> map = new HashMap<>();
     Movie movie = Movie.builder().title(dto.getTitle()).mno(dto.getMno()).build();
@@ -33,8 +35,8 @@ public sealed interface MovieService permits MovieServiceImpl{
     return map;
   }
 
-  default MovieDTO toDTO(Movie movie, List<MovieImage> images, double avg, long reviewCnt) {
-    return MovieDTO.builder()
+  default MovieDTO toDTO(Movie movie, List<MovieImage> images, double avg, Long reviewCnt) {
+    return  MovieDTO.builder()
             .mno(movie.getMno())
             .title(movie.getTitle())
             .regDate(movie.getRegDate())
@@ -45,8 +47,9 @@ public sealed interface MovieService permits MovieServiceImpl{
                     .path(i.getPath())
                     .build()).toList())
             .avg(avg)
-            .reviewsCnt(reviewCnt)
+            .reviewCnt(reviewCnt)
             .build();
   }
+
 
 }

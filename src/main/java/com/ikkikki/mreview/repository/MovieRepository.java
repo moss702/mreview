@@ -16,7 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
   Page<Object[]> getListPage(Pageable pageable);
 
   @Query("select m, mi, round(avg(coalesce(r.grade, 0)), 1), count(distinct r) from Movie m " +
-          "join MovieImage mi on mi.movie = m " +
+          "left join MovieImage mi on mi.movie = m " +
           "left join Review r on r.movie = m where m.mno = :mno group by mi")
   List<Object[]> getMovieWithAll(@Param("mno") Long mno);
   // 이미지가 페이징 필요하면 page 타입. 많을것같지않으니 list

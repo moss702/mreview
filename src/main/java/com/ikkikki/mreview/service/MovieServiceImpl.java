@@ -8,15 +8,16 @@ import com.ikkikki.mreview.domain.entity.MovieImage;
 import com.ikkikki.mreview.repository.MovieImageRepository;
 import com.ikkikki.mreview.repository.MovieRepository;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @Service
 @Data
 public non-sealed class MovieServiceImpl implements MovieService {
@@ -46,4 +47,17 @@ public non-sealed class MovieServiceImpl implements MovieService {
                         (Double) arr[2],
                         (Long)arr[3]));
   }
+
+  @Override
+  public MovieDTO get(Long mno) {
+    List<Object[]> list = movieRepository.getMovieWithAll(mno);
+//    list.forEach(m -> log.info(Arrays.toString(m)));
+    Movie movie = (Movie) list.getFirst()[0] ;
+    List<MovieImage> movieImages = (Arrays.asList((MovieImage) list.getFirst()[1]));
+    Double avg =(Double) list.getFirst()[2];
+    Long reviewCnt = (Long) list.getFirst()[3];
+    return toDTO(movie, movieImages, avg, reviewCnt);
+  }
+
+
 }

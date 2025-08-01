@@ -18,4 +18,10 @@ public class MovieServiceTest {
     movieService.getList(PageRequestDTO.builder().build()).getList().forEach(log::info);
   }
 
+  @Test
+  public void testGet(){
+    Long mno = 199L;
+    log.info(movieService.get(mno));
+  }
+
 }

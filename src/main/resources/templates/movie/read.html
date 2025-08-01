@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/index :: setContent(~{this::content})}">
+  <th:block th:fragment="content">
+    <h1>Movie Read Page</h1>
+
+    <div class="form-group">
+      <label for="mno">mno</label>
+      <input type="text" class="form-control" name="mno" placeholder="mno" id="mno" th:value="${dto.mno}"
+             readonly="readonly">
+    </div>
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" class="form-control" name="title" placeholder="title" id="title" th:value="${dto.title}"
+             readonly="readonly">
+    </div>
+
+    <div class="form-group">
+      <label>regDate</label>
+      <input type="text" class="form-control" name="regDate" placeholder="regDate"
+             th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd')}" readonly="readonly">
+    </div>
+
+    <div class="form-group">
+      <label>modDate</label>
+      <input type="text" class="form-control" name="modDate" placeholder="modDate"
+             th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd')}" readonly="readonly">
+    </div>
+    <dto class="uploadResult">
+      <ul>
+        <li th:each="mi : ${dto.list}" >
+          <img th:if="${ mi != null && mi.path != null}" th:src="'/display' + ${mi.thumb} " onerror=" this.src='https://placehold.co/100x200?text=No+Image' ">
+        </li>
+      </ul>
+    </dto>
+
+    <a
+            th:href="@{/movie/modify(page = ${requestDto.page}, size = ${requestDto.size}, mno= ${dto.mno}, type=${requestDto.type}, keyword=${requestDto.keyword})}"
+            class="btn btn-primary mt-3">modify</a>
+    <a
+            th:href="@{/movie/list(page = ${requestDto.page}, size = ${requestDto.size}, type=${requestDto.type}, keyword=${requestDto.keyword})}"
+            class="btn btn-primary mt-3">List</a>
+    <div class="mt-4">
+      <button class="badge text-white badge bg-info addReply p-2 border-0">Add Reply</button>
+      <button class="text-decoration-none text-white badge bg-secondary replyCount p-2">Reply
+        Count[[${dto.reviewCnt}]]
+      </button>
+      <ul class="list-group replyList">
+
+
+      </ul>
+    </div>
+  </th:block>
+</th:block>
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Reply</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="form-group">
+          <input class="form-control replyText" type="text" name="text" placeholder="replyText">
+        </div>
+        <div class="form-group my-3">
+          <input class="form-control replyer" type="text" name="replyer" placeholder="replyer">
+        </div>
+        <div class="form-group">
+          <input class="form-control rno" type="hidden" name="rno">
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger replyRemove">Remove</button>
+        <button type="button" class="btn btn-warning replyModify">Modify</button>
+        <button type="button" class="btn btn-primary replySave">Save</button>
+        <button type="button" class="btn btn-outline-secondary replyClose" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/dayjs.min.js" integrity="sha512-FwNWaxyfy2XlEINoSnZh1JQ5TRRtGow0D6XcmAWmYCRgvqOUTnzCxPc9uF35u5ZEpirk1uhlPVA19tflhvnW1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/plugin/relativeTime.min.js" integrity="sha512-MVzDPmm7QZ8PhEiqJXKz/zw2HJuv61waxb8XXuZMMs9b+an3LoqOqhOEt5Nq3LY1e4Ipbbd/e+AWgERdHlVgaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/locale/ko.min.js" integrity="sha512-ycjm4Ytoo3TvmzHEuGNgNJYSFHgsw/TkiPrGvXXkR6KARyzuEpwDbIfrvdf6DwXm+b1Y+fx6mo25tBr1Icg7Fw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script th:inline="javascript">
+  // window.addEventListener("load", e => {
+  //   // dayjs 전역설정
+  //   dayjs.extend(window.dayjs_plugin_relativeTime);
+  //   dayjs.locale('ko')
+  //
+  //   const myModal = new bootstrap.Modal(document.querySelector('.modal'))   // 모달 보이기
+  //   const mno = [[${dto.mno}]];
+  //   const listGroup = document.querySelector(".replyList");
+  //
+  //   // oadJSONData : listGroup을 JSON 형태로 출력
+  //   const loadJSONData = () => {
+  //     fetch(`/replies/board/${mno}`)
+  //       .then(resp => resp.json())
+  //       .then(arr => {
+  //         document.querySelector(".replyCount").innerHTML = "Reply Count" + arr.length;
+  //         listGroup.innerHTML = arr.map(r => {
+  //           return `
+  //               <li class="card list-group-item" data-rno="${r.rno}">
+  //                 <b>${r.rno}</b>
+  //                 <div class="card-body">
+  //                   <h5 class="card-title"> ${r.text}</h5>
+  //                   <h5 class="card-subtitle mb-2 text-muted">${r.replyer}</h5>
+  //                   <p class="card-text"> ${dayjs(r.regDate).fromNow()}</p>
+  //                   <!--<button class="replyButton btn btn-outline-secondary">수정 | 삭제</button>-->
+  //                 </div>
+  //               </li>
+  //             `;
+  //         }).join("")
+  //       })
+  //   };
+  //
+  //   // replyCount
+  //   document.querySelector(".replyCount").addEventListener("click", loadJSONData);
+  //
+  //   //댓글 등록
+  //   document.querySelector(".addReply").addEventListener("click", () => {
+  //     // 모달 입력창 초기화
+  //     document.querySelectorAll(".modal input[type-text]").forEach(i => i.value= '');
+  //
+  //     // document.querySelectorAll(".modal-footer button").forEach(b =>b.classList.add('d-none'));
+  //     [...document.querySelectorAll(".modal-footer button")]
+  //       .filter(b => {b.classList.add('d-none'); return b.matches('.replyClose, .replySave')})
+  //       .forEach(b => b.classList.remove('d-none'));
+  //     // [...document.querySelectorAll(".modal-footer button")].map(b => {b.classList.add('d-none'); return b});
+  //
+  //
+  //     document.querySelector(".replySave").addEventListener("click", e => {
+  //
+  //       const reply = {mno}
+  //       e.target.closest(".modal").querySelectorAll("input[type=text]").forEach(i => console.log(reply[i.name] = i.value));
+  //
+  //       fetch("/replies", {
+  //         method : "POST",
+  //         headers : {
+  //           "Content-Type": "application/json"
+  //         },
+  //         body: JSON.stringify(reply)
+  //       })
+  //         .then(resp => resp.json())
+  //         .then(data => {
+  //           alert(data + "번 댓글이 등록");
+  //           myModal.hide();
+  //           loadJSONData();
+  //         });
+  //     })
+  //     myModal.show();
+  //   });
+  //
+  //
+  //   document.querySelector(".replyList").addEventListener("click", function (e){
+  //
+  //     const li = e.target.closest("li");
+  //     const text = li.querySelector(".card-title").innerText;
+  //     const replyer = li.querySelector(".card-subtitle").innerText;
+  //
+  //     document.querySelector(".modal input[name=text]").value = text;
+  //     document.querySelector(".modal input[name=replyer]").value = replyer;
+  //     document.querySelector(".modal input[name=rno]").value = li.dataset.rno;
+  //
+  //     [...document.querySelectorAll(".modal-footer button")]
+  //       .filter(b => {b.classList.remove('d-none'); return b.matches('.replySave')})
+  //       .forEach(b => b.classList.add('d-none'));
+  //     myModal.show();
+  //
+  //   });
+  //
+  //   // 댓글 삭제
+  //   document.querySelector(".modal .replyRemove").addEventListener("click", e => {
+  //
+  //     const rno = document.querySelector(".modal input[name=rno]").value;
+  //
+  //     fetch(`/replies/${rno}`, {
+  //       method : "DELETE",
+  //     })
+  //       .then(() => {
+  //         alert("댓글 삭제됨");
+  //         myModal.hide();
+  //         loadJSONData();
+  //       });
+  //   });
+  //   // 댓글 수정
+  //   document.querySelector(".modal .replyModify").addEventListener("click", e => {
+  //     const rno = document.querySelector(".modal input[name=rno]").value;
+  //     const text = document.querySelector(".modal input[name=text]").value;
+  //     const replyer = document.querySelector(".modal input[name=replyer]").value;
+  //     const reply = {rno, text, replyer, mno};
+  //
+  //     fetch(`/replies/${rno}`, {
+  //       method : "PUT",
+  //       headers : {
+  //         "Content-Type" : "application/json"
+  //       },
+  //       body : JSON.stringify(reply)
+  //     })
+  //       .then(() => {
+  //         alert("댓글 수정됨");
+  //         myModal.hide();
+  //         loadJSONData();
+  //       });
+  //   });
+  //
+  // });
+  //
+
+
+</script>
+
+</html>
